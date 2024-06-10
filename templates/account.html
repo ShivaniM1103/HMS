@@ -1,0 +1,268 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+
+<div class="main-home">
+    <div class="home" id="Home">
+        <div class="home-left-account">
+            {% if details %}
+            <h1>Account Details</h1>
+            <!-- Account details -->
+            {% if user.is_superuser %}
+            <div class="account-details">
+                <div class="account-image">
+                    <img src="{% static 'images/default-profile.jpg' %}" alt="User Image">
+                </div>
+                <div class="account-info">
+                    <p><strong>Name:</strong>{{ details.username }} {{ details.last_name }}</p>
+                    <p><strong>Email:</strong> {{details.email}}</p>
+                    <!-- Additional info can be added here -->
+                </div>
+            </div>
+            {% elif user.is_doctor %}
+            <div class="account-details">
+                <div class="account-image">
+                    <img src="{{details.profile_pic.url}}" alt="User Image">
+                </div>
+                <div class="account-info">
+                    <p><strong>Name:</strong>Dr {{ details.get_name }}</p>
+                    <p><strong>Department:</strong>{{ details.department }}</p>
+                    <p><strong>Phone Number:</strong>{{details.phoneno }}</p>
+                    <p><strong>Email:</strong> {{ user.email }}</p>
+                    <p><strong>Address:</strong> {{ details.address }}</p>
+                    <p><strong>Status:</strong> {% if details.status %}In cabin {% else %} Not In Cabin{% endif %}</p><br>
+                    <a href="{% url 'change_doc_status' details.id %}" class="homebtnsec">Change Status</a><br>
+                    <!-- Additional info can be added here -->
+                </div>
+            </div>
+            {% elif user.is_pharmacist %}
+            <div class="account-details">
+                <div class="account-image">
+                    <img src="{{details.profile_pic.url}}" alt="User Image">
+                </div>
+                <div class="account-info">
+                    <p><strong>Name:</strong>{{ details.get_name }}</p>
+                    <p><strong>Phone Number:</strong>{{details.phoneno }}</p>
+                    <p><strong>Email:</strong> {{ user.email }}</p>
+                    <p><strong>Address:</strong> {{ details.address }}</p><br>
+
+                    <!-- Additional info can be added here -->
+                </div>
+            </div>
+            {% elif user.is_patient %}
+            <div class="account-details">
+                <div class="account-image">
+                    <img src="{{details.profile_pic.url}}" alt="User Image" width="90px" height="120px">
+                </div>
+                <div class="account-info">
+                    <p><strong>Name:</strong> {{ details.get_name }}</p>
+                    <p><strong>Email:</strong> {{ user.email }}</p>
+                    <p><strong>Address:</strong> {{ details.address }}</p> 
+                    <p><strong>Address:</strong> {{ details.phoneno }}</p>
+                    <!-- Additional info can be added here -->
+                </div>
+            </div>
+            {% else %}
+            {% endif %}
+            {% else %}
+            <div class="appointment-container">
+                <h1>Complete Profile</h1>
+                
+                 <form method="post" action="{% url 'complete_profile' %}" enctype="multipart/form-data">
+                       {% csrf_token %}
+                       <table class="appform">
+                           {% for field in form %}
+                               <tr>
+                                   <td>{{ field.label_tag }}</td>
+                                   <td>{{ field }}</td>
+                                   <td>{{ field.errors }}</td>
+                               </tr>
+                           {% endfor %}
+                       </table>
+                       <div class="home-btn">
+                         <input class="homebtnsec" type="submit" value="Complete Profile">
+                       </div>
+                   </form>
+            </div>
+        {% endif %}   
+        </div>
+    </div>
+    <div class="home-center-content">
+        {% if user.is_doctor %}
+        <h1>Todays pending Appointments</h1>
+        {% if not appointments %}
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th><center>No appointments yet</center></th>
+                </tr>
+            </thead>
+        </table>
+        {% else %}
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>patient name</th>
+                    <th>Date</th>
+                    <th>Time Slot</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appointment in appointments %}
+                <tr>
+                    <td>{{ appointment.patient.get_name }}</td>
+                    <td>{{ appointment.date }}</td>
+                    <td>{{ appointment.get_time_slot_display }}</td>
+                    <td>{{ appointment.status|yesno:"Completed,Pending" }}</td>
+                    {% if appointment.status %}
+                    <td><a href="#">View</a></td>
+                    {% else %}
+                    <td><a href="{% url 'report' appointment.id %}">Consult</a></td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+        {% elif user.is_patient %}
+        <h1>Pending Appointments</h1>
+        {% if not appointments %}
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th><center>No appointments yet</center></th>
+                </tr>
+            </thead>
+        </table>
+        {% else %}
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>Doctor</th>
+                    <th>Date</th>
+                    <th>Time Slot</th>
+                    <th>Status</th>
+                    <th>Cancel</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appointment in appointments %}
+                    <tr>
+                        <td>{{ appointment.doctor.get_name }}</td>
+                        <td>{{ appointment.date }}</td>
+                        <td>{{ appointment.get_time_slot_display }}</td>
+                        <td>{{ appointment.status|yesno:"Completed,Pending" }}</td>
+                        {% if not appointment.status %}
+                        <td><a href="{% url 'delapp' appointment.id %}">&nbsp;<i class="fa fa-trash"></i></a></td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+
+        {% endif %}
+    </div>
+</div>
+
+<!-- 
+    <h2>My Account</h2>
+        {% if msg %}
+            <p>{{ msg }}</p>
+        {% endif %}
+    <div class="home home-left-account">    
+        {% if details %}
+            {% if user.is_superuser %}
+                <div class="account-details">
+                    <div class="account-info">
+                        <p><strong>Name:</strong> {{ details.username }} {{ details.last_name }}</p>
+                        <p><strong>Email:</strong> {{ details.email }}</p>
+                    </div>
+                </div>
+            {% elif user.is_doctor %}
+                <div class="account-details">
+                    <div class="account-info">
+                        <p><strong>Name:</strong> {{ details.get_name }}</p>
+                        <p><strong>Department:</strong> {{ details.department }}</p>
+                        <p><strong>Address:</strong> {{ details.address }}</p>
+                        <p><strong>Email:</strong> {{ user.email }}</p>
+                    </div>
+                </div>
+                <table class="styled-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Time Slot</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for appointment in appointments %}
+                            <tr>
+                                <td>{{ appointment.date }}</td>
+                                <td>{{ appointment.get_time_slot_display }}</td>
+                                <td>{{ appointment.status|yesno:"Completed,Pending" }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% elif user.is_patient %}
+                <div class="account-details">
+                    <div class="account-image">
+                        {% if details.profile_pic %}
+                            <img src="{{ details.profile_pic.url }}" alt="Profile Picture">
+                        {% else %}
+                            <img src="{% static 'default-profile.jfif' %}" alt="Profile Picture">
+                        {% endif %}
+                    </div>
+                    <div class="account-info">
+                        <p><strong>Name:</strong> {{ details.get_name }}</p>
+                        <p><strong>Address:</strong> {{ details.address }}</p>
+                        <p><strong>Email:</strong> {{ user.email }}</p>
+                    </div>
+                </div>
+                <table class="styled-table">
+                    <thead>
+                        <tr>
+                            <th>Doctor</th>
+                            <th>Date</th>
+                            <th>Time Slot</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for appointment in appointments %}
+                            <tr>
+                                <td>{{ appointment.doctor.get_name }}</td>
+                                <td>{{ appointment.date }}</td>
+                                <td>{{ appointment.get_time_slot_display }}</td>
+                                <td>{{ appointment.status|yesno:"Completed,Pending" }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div class="home-center-content">
+                    <h3>Update Profile</h3>
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit" class="btn">Update</button>
+                    </form>
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="home-center-content">
+                <h3>Incomplete profile</h3>
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn">Complete Profile</button>
+                </form>
+            </div>
+        {% endif %}
+    </div> -->
+
+
+{% endblock %}

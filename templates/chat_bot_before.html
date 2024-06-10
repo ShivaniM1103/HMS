@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Bot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        #chat-container {
+            width: 80%;
+            max-width: 800px;
+            margin: 50px auto;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        #chat-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        #chat-list li {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .user-message {
+            background-color: #d1e7dd;
+            text-align: right;
+        }
+        .bot-message {
+            background-color: #f8d7da;
+            text-align: left;
+        }
+        #chat-form {
+            display: flex;
+            flex-direction: column;
+            margin-top: 20px;
+        }
+        #text {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            resize: none;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div id="chat-container">
+        <h1>Chat Bot</h1>
+        <div id="chat-content">
+            <ul id="chat-list">
+                {% for chat in chats %}
+                
+    <li class="user-message"><strong>You:</strong> {{ chat.text_input }}</li>
+    <strong>Bot:</strong>
+        <li class="bot-message">
+            {% for sentence in chat.sentences %}
+            <p>{{ sentence }}</p>
+            {% endfor %}
+        </li>
+    
+{% endfor %}
+            </ul>
+        </div>
+        <form id="chat-form" method="POST" action="{% url 'ask_question' %}">
+            {% csrf_token %}
+            <textarea name="text" id="text" rows="4" cols="50" placeholder="Type your message here..."></textarea>
+            <button type="submit">Send</button>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<!-- Home section started -->
+
+<div class="main-home">
+    <div class="home" id="Home">
+        <div class="home-left-content">
+            <span>Welcome to hospital management</span>
+            <h2>We take care our<br> Patients Healths</h2>
+            <p class="lorem">Health care is not a privilege. <br>Its a right.<br>Its a right as fundamental as civil rights.<br>Its a right as fundamental as giving every child a chance to get a public education.</p>
+            {% if request.user.is_authenticated %}
+            {% if user.is_patient %}
+                <div class="home-btn">
+                    <a class="homebtnsec" href="{% url 'index' %}">Read More</a>
+                    <a class="homebtnsec" href="{% url 'appointment' %}">Appointment</a>
+                </div>
+            {% elif user.is_doctor %}
+            <div class="home-btn">
+                <a class="homebtnsec" href="{% url 'index' %}">Read More</a>
+                <a class="homebtnsec" href="{% url 'appointment' %}">Appointment</a>
+            </div>
+            {% elif user.is_pharmacist %}
+            <div class="home-btn">
+                <a class="homebtnsec" href="{% url 'index' %}">Read More</a>
+                <a class="homebtnsec" href="{% url 'medlist' %}">Medicines</a>
+            </div>
+            {% else %}
+            <div class="home-btn">
+                <a class="homebtnsec" href="{% url 'index' %}">Read More</a>
+            </div>
+            {% endif %}
+            {% else %}
+            <div class="home-btn">
+                <a class="homebtnsec" href="{% url 'register' %}">Register</a>
+                <a class="homebtnsec" href="{% url 'login_view' %}">Login</a>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="home-right-content">
+            <img src="{% static 'images/analysis-hospital-doctor-medical.jpg' %}" alt="">
+        </div>
+    </div>
+</div>
+
+
+<!-- home section ends -->
+{% endblock %}

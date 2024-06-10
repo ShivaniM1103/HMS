@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+{% load custom_filters %}
+
+
+<div class="main-home">
+    <div class="home" id="Home">
+        <div class="main-review" id="review">
+            <div class="review-heading">
+                <h1>Doctors List</h1>
+                {% if messages %}
+                <ul>
+                    {% for message in messages %}
+                        <h2{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}<br></h2>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            </div>
+    
+            {% if user.is_patient %}
+            <section>  
+            <div class="main-inner-review">
+                <div class="review-inner-content">
+                    {% if doc|length == 0 %}
+                    <div class="review-box">
+                        <h2>No Doctors Yet</h2>
+                        <div class="review-text">
+                            <p>We will be recruiting doctors soon</p>
+                        </div>
+                    </div>
+                    {%else%}
+                    {% for d in doc %}
+                    <div class="review-box">
+                        {% if d.status %}
+                        <div class="status-circle" style="background-color: green;" title="In cabin"></div> <!-- Add this line for the status circle -->
+                        {% else %}
+                        <div class="status-circle" style="background-color: red;" title="Not In cabin"></div>
+                        {% endif %}
+                        <img src="{{d.profile_pic.url}}" alt="">
+                        <div class="review-text">
+                        <center><p><strong>Name:</strong> Dr. {{d.get_name}}<br>
+                            <strong>Email:</strong> {{d.user.email}}<br>
+                            <strong>Earliest free slot:</strong>
+                            {% with free_slot=free_slots|get_item:d.id %}
+                {% if free_slot.date %}
+                    {{ free_slot.date }} at {{ free_slot.time_slot }}
+                {% else %}
+                    No free slots available in the next 30 days.
+                {% endif %}
+            {% endwith %}
+                        <!-- <div class="review-stars">
+                            <i class="fa-solid fa-star"></i>
+                        </div> -->
+                        <!-- <br>Know more <a href="#">Read</a></p></center> -->
+                        </div>
+                        <a href="{% url 'appointment' d.id %}" class="book-btn">Book</a>                    
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+        {% elif user.is_superuser %}
+        <section>  
+            <center><a href="{% url 'staff_reg' %}" class="homebtnsec">Add staff</a></center><br><br>
+            <div class="main-inner-review">
+                <div class="review-inner-content">
+                    {% if doc|length == 0 %}
+                    <div class="review-box">
+                        <h2>No Doctors Yet</h2>
+                        <!-- <div class="review-text">
+                            <a href="{% url 'staff_reg' %}" class="book-btn">Add staff</a>
+                        </div> -->
+                    </div>
+                    {%else%}
+                    {% for d in doc %}
+                    <div class="review-box">
+                        {% if d.status %}
+                        <div class="status-circle" style="background-color: green;" title="In cabin"></div> <!-- Add this line for the status circle -->
+                        {% else %}
+                        <div class="status-circle" style="background-color: red;" title="Not In cabin"></div>
+                        {% endif %}
+                        <img src="{{d.profile_pic.url}}" alt="">
+                        <div class="review-text">
+                        <center><p><strong>Name:</strong> Dr. {{d.get_name}}<br>
+                            <strong>Email:</strong> {{d.user.email}}<br>
+                            <strong>Earliest free slot:</strong>
+                            {% with free_slot=free_slots|get_item:d.id %}
+                {% if free_slot.date %}
+                    {{ free_slot.date }} at {{ free_slot.time_slot }}
+                {% else %}
+                    No free slots available in the next 30 days.
+                {% endif %}
+            {% endwith %}
+                        <!-- <div class="review-stars">
+                            <i class="fa-solid fa-star"></i>
+                        </div> -->
+                        </div>
+                        <p><a href="{% url 'index' %}" class="book-btn">Delete</a></p>               
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+        {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

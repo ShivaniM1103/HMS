@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+
+<div class="main-home">
+  <div class="home" id="Home">
+    <div class="appointment-container">
+           <h1>Register</h1>
+           {% if messages %}
+                <ul>
+                    {% for message in messages %}
+                        <h2{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}<br></h2>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            <form method="post" action="{% url 'staff_reg' %}">
+                  {% csrf_token %}
+                  <table class="appform">
+                      {% for field in form %}
+                          <tr>
+                              <td>{{ field.label_tag }}</td>
+                              <td>{{ field }}</td>
+                              <td>{{ field.errors }}</td>
+                          </tr>
+                      {% endfor %}
+                  </table>
+                  <div class="home-btn">
+                    <input class="homebtnsec" type="submit" value="Add Staff">
+                  </div>
+              </form>
+    </div>
+  </div>
+</div>
+<!-- 
+<div class="main-home">
+    <div class="home">
+        <div class="home-center">
+            <div class="login-form">
+              <h2>Register Below:</h2>
+                <form  method="post">
+                    {% csrf_token %}
+                    <div class="form-group first">
+                      <label for="first_name">First name</label>
+                        {{ form.first_name }}
+                    </div>
+                    <div class="form-group first">
+                      <label for="last_name">Last name</label>
+                        {{ form.last_name }}
+                    </div>
+                  <div class="form-group first">
+                    <label for="username">Username</label>
+                      {{ form.username }}
+                  </div>
+                  <div class="form-group first">
+                    <label for="email">Email</label>
+                      {{ form.email}}
+                  </div>
+                  <div class="form-group first">
+                    <label for="email">Phno</label>
+                      {{ form.phoneno}}
+                  </div>
+                  <div class="form-group last mb-4">
+                    <label for="password">Password</label>
+                      {{ form.password1 }}
+                  </div>
+                  <div class="form-group last mb-4">
+                    <label for="password">confirm Password</label>
+                      {{ form.password2 }}
+                  </div>
+                  <div class="d-flex mb-5 align-items-center">
+                    <label class="control control--checkbox mb-0"><span class="caption">Doctor</span>
+                        {{ form.is_doctor }}
+                      <div class="control__indicator"></div>
+                    </label>
+                    <label class="control control--checkbox mb-0"><span class="caption">Pharmacist</span>
+                        {{ form.is_pharmacist }}
+                      <div class="control__indicator"></div>
+                    </label>
+                  </div>
+                    <span class="text-error">{{ form.errors }}</span>
+                  <input type="submit"  value="Register" class="btn btn-pill text-white btn-block btn-primary">
+                </form>
+            </div>
+        </div>
+    </div>
+</div> -->
+{% endblock %}

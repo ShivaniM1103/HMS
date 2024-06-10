@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<div class="main-home">
+    <div class="home" id="Home">
+        <div class="main-review" id="review">
+            <section>  
+            <div class="review-heading">
+                <h1>Departments</h1>
+                {% if messages %}
+                <ul>
+                    {% for message in messages %}
+                        <h2{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}<br></h2>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            </div>
+            <form method="post" action="{% url 'search_department' %}">
+                {% csrf_token %}
+                <table class="appform">
+                        <tr>
+                            <td><input type="text" id="searchdept" name="searchdept">
+                                <input class="homebtnsec" type="submit" value="search dept">
+                                <a href="{% url 'departments' %}" class="homebtnsec">See All</a>
+                            </td>
+                        </tr>                
+                </table>
+            </form>
+            {% if request.user.is_authenticated %}
+            {% if user.is_superuser %}
+            <br><br><center><a href="{% url 'adddept' %}" class="homebtnsec">Add department</a></center><br><br>
+            {% endif %}
+            {% endif %}
+
+            {% if request.user.is_authenticated %}
+            {% if user.is_patient %}
+            <div class="main-inner-review">
+                <div class="review-inner-content">
+                    {% if depts|length == 0 %}
+                    <div class="review-box">
+                        <h2>No Departments</h2>
+                        <div class="review-text">
+                            <p>We will be adding departments soon</p>
+                        </div>
+                    </div>
+                    {%else%}
+                    {% for d in depts %}
+                    <div class="review-box">
+                        <!-- <img src="{% static 'images/pic3.png' %}" alt=""> -->
+                        <h2>{{d.dname}}</h2>
+                        <div class="review-text">
+                            <p><strong>number of doctors:</strong> {{d.No_of_doctors}}<br>
+                                <strong>Dept ph no:</strong> {{d.phoneno}}</p>
+                        </div>
+                        <a href="{% url 'doctor' d.id %}" class="book-btn">Choose Doctor</a>
+                       
+                        <a href="{% url 'bookbedform' d.id %}" class="book-btn">Book Bed</a>
+                    </div>
+                    {% endfor %}
+                    {%endif%}
+                </div>
+            </div>
+            {% elif user.is_superuser %}
+            {% if depts|length == 0 %}
+            <div class="main-inner-review">
+                <div class="review-inner-content">
+                    <div class="review-box">
+                        <h2>No Departments</h2>
+                        <div class="review-text">
+                            <a href="{% url 'adddept' %}" class="book-btn">Add department</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {%else%}
+            <div class="main-inner-review">
+                <!-- <a href="{% url 'adddept' %}" class="homebtnsec">Add department</a> -->
+                <div class="review-inner-content">
+                        {% for d in depts %}
+                        <div class="review-box">
+                            <!-- <img src="{% static 'images/pic3.png' %}" alt=""> -->
+                            <h2>{{d.dname}}</h2>
+                            <div class="review-text">
+                                <p><strong>number of doctors:</strong> {{d.No_of_doctors}}<br>
+                                <strong>Dept ph no:</strong> {{d.phoneno}}</p>
+                            </div>
+                        
+                            <a href="{% url 'doctor' d.id %}" class="book-btn">View doctors</a>
+                            <a href="{% url 'addbedform' d.id %}" class="book-btn">Add bed</a>
+                            <a href="{% url 'bookbedform' d.id %}" class="book-btn">Book Bed</a>
+                        </div>
+                        {% endfor %}
+                    
+                </div>
+            </div>
+            {%endif%}
+            {% endif %}
+            {% endif %}
+        </section>
+        </div>
+    
+    <!-- customer review -->
+    </div>
+</div>
+
+
+<!-- home section ends -->
+
+{% endblock %}

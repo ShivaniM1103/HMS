@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<div class="main-home">
+    <div class="home" id="Home">      
+        <div class="appointment-container">
+            <h1>Add Medicines</h1>
+            <form method="post" action="{% url 'addmed' %}">
+                {% csrf_token %}
+                <table class="appform">
+                    {% for field in form %}
+                        <tr>
+                            <td>{{ field.label_tag }}</td>
+                            <td>{{ field }}</td>
+                            <td>{{ field.errors }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                <div class="home-btn">
+                    <input class="homebtnsec" type="submit" value="Add med">
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

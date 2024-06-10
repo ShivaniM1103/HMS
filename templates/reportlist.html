@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+
+<div class="main-home">
+    <div class="home" id="Home">
+        {% if messages %}
+                <ul>
+                    {% for message in messages %}
+                        <h2{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}<br></h2>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% if user.is_doctor %}
+        <form method="post" action="{% url 'search_reports' %}">
+            {% csrf_token %}
+            <table class="appform">
+                    <tr>
+                        <td><input type="text" id="searchpatient" name="patientname">
+                            <input class="homebtnsec" type="submit" value="search patient">
+                            <a href="{% url 'reportlist' %}" class="homebtnsec">See All</a>
+                        </td>
+                    </tr>                
+            </table>
+        </form>
+        <br>
+        {% if not reports %}
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th><center>No appointments yet</center></th>
+                </tr>
+            </thead>
+        </table>
+        {% else %}
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>Report ID</th>
+                    <th>Patient Name</th>
+                    <th>Appointment Date</th>
+                    <th>Time Slot</th>
+                    <th>Doctor Name</th>
+                    <th>Print/View</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for report in reports %}
+                <tr>
+                    <td>{{ report.id }}</td>
+                    <td>{{ report.app.patient.get_name }}</td>
+                    <td>{{ report.app.date }}</td>
+                    <td>{{ report.app.time_slot }}</td>
+                    <td>{{ report.app.doctor.get_name }}</td>
+                    <td><a href="{% url 'generate_pdf' report.id %}" target='_blank'><i class="fa fa-print"></i></a>
+                        <a href="{% url 'medicalreport' report.id %}" target='_blank'>&nbsp;&nbsp;View</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+        {% elif user.is_patient %}
+        <div class="review-heading">
+            <h1>Reports</h1>
+        </div>
+        {% if not reports %}
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th><center>No Reports yet</center></th>
+                </tr>
+            </thead>
+        </table>
+        {% else %}
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>Report ID</th>
+                    <th>Appointment Date</th>
+                    <th>Time Slot</th>
+                    <th>Doctor Name</th>
+                    <th>Print/view</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for report in reports %}
+                <tr>
+                    <td>{{ report.id }}</td>
+                    <td>{{ report.app.date }}</td>
+                    <td>{{ report.app.time_slot }}</td>
+                    <td>{{ report.app.doctor.get_name }}</td>
+                    <td><a href="{% url 'generate_pdf' report.id %}" target='_blank'><i class="fa fa-print"></i></a>
+                        <a href="{% url 'medicalreport' report.id %}" target='_blank'>&nbsp;&nbsp;View</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

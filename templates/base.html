@@ -1,0 +1,83 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital management website</title>
+
+    <script src="https://kit.fontawesome.com/c1df782baf.js"></script>
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.1.0/uicons-thin-rounded/css/uicons-thin-rounded.css'>
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body> 
+
+    <header>
+        <div class="logo"><img src="{% static 'images/hms.png' %}" alt=""></div>
+        {% if request.user.is_authenticated %}
+        <nav class="navbar">
+            <a class="nav-link" href="{% url 'index' %}">Home</a>
+            <!-- <a class="nav-link" href="{% url 'index' %}">About</a> -->
+            <a href="{% url 'chat' %}">Chatbot</a>
+            {% if user.is_patient %}
+            <a class="nav-link" href="{% url 'departments' %}">Booking</a>
+            <a class="nav-link" href="{% url 'reportlist' %}">Reports</a>
+            <a class="nav-link" href="{% url 'appointmentlist' %}">History</a>
+            <a class="nav-link" href="{% url 'medlist' %}">Pharmacy</a>
+            {% elif user.is_doctor %}
+            <a class="nav-link" href="{% url 'reportlist' %}">Reports</a>
+            <a class="nav-link" href="{% url 'appointmentlist' %}">Appointments</a>
+            {% elif user.is_pharmacist %}
+            <a class="nav-link" href="{% url 'medlist' %}">Medicines</a>
+            {% else %}
+            <a class="nav-link" href="{% url 'staff_reg' %}">Add staff</a>
+            <a class="nav-link" href="{% url 'departments' %}">Departments</a>
+            <a class="nav-link" href="{% url 'appointmentlist' %}">Bookings</a>
+            {% endif %}
+            <a href="{% url 'signout' %}">logout</a>
+        </nav>
+        <div class="right-icons">
+            <div id="menu-bars" class="fas fa-bars"></div>
+            <div class="btn"><a href="{% url 'account' %}">Your Account</a></div>
+        </div>
+        {% else %}
+        <nav class="navbar">
+            <a class="nav-link" href="{% url 'index' %}">Home</a>
+            <a class="nav-link" href="{% url 'index' %}">About</a>
+            <a class="nav-link" href="{% url 'index' %}">Contact</a>
+        </nav>
+        <div class="right-icons">
+            <div id="menu-bars" class="fas fa-bars"></div>
+            <div class="btn"><a href="{% url 'login_view' %}" >Login</a></div>
+        </div>
+        {% endif %}
+    </header> 
+
+    {% block content %}
+    <!-- Add your page specific content here -->
+    {% endblock %}
+    
+    <!-- footer -->
+    <div class="main-footer" id="Contact">
+        <div class="footer-inner">
+            <div class="footer-content">
+                <h1>Contact Us</h1>
+                <div class="link">
+                    <a href="tel:+1234567890">Call Us: +91(9353906478)</a>
+                </div>
+            </div>
+            <div class="footer-content">
+                <h1>Social Media</h1><br>
+                <div class="logos">
+                    <a href="https://www.instagram.com/" target="_blank"><img src="{% static 'images/inst.png' %}" alt="Not found" height="20px" width="30px"></a>
+                    <a href="https://twitter.com/i/flow/login" target="_blank"><img src="{% static 'images/twit.png' %}" alt="Not found" height="20px" width="30px"></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- footer ended -->
+
+    <script src="{% static 'script.js' %}"></script>
+</body>
+</html>

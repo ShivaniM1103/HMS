@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+
+<div class="main-home">
+    <div class="home" id="Home">    
+        {% if messages %}
+                <ul>
+                    {% for message in messages %}
+                        <h2{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}<br></h2>
+                    {% endfor %}
+                </ul>
+            {% endif %}  
+        <form method="post" action="{% url 'searchmed' %}">
+            {% csrf_token %}
+            <table class="appform">
+                    <tr>
+                        <td><input type="text" id="searchmed" placeholder="Search by Medicine Name" name="medname">
+                            <input class="homebtnsec" type="submit" value="search medicine">
+                            <a href="{% url 'get_exp_meds' %}" class="homebtnsec">Expiring Meds</a>
+                            <a href="{% url 'medlist' %}" class="homebtnsec">See All</a>
+                        </td>
+                    </tr>                
+            </table>
+        </form>                        
+       
+                {% if not details %}
+                <table class="styled-table">
+                    <thead>
+                        <tr>
+                            <th><center>No medicines yet</center></th>
+                        </tr>
+                    </thead>
+                </table>
+                {% else %}
+                {% if user.is_pharmacist %}
+                <table class="styled-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>manufacturer</th>
+                            <th>price</th>
+                            <th>Quantity</th>
+                            <th>Exp Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for d in details %}
+                        <tr>
+                            <td>{{ d.name }}</td>
+                            <td>{{ d.manufacturer }}</td>
+                            <td>{{ d.price }}</td>
+                            <td>{{ d.quantity }}</td>
+                            <td>{{ d.expiry_date }}</td>
+                            <td><a href="{% url 'meddel' d.id %}"><i class="fa fa-trash"></i></a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div class="home-btn">
+                    <a class="homebtnsec" href="{% url 'addmedform' %}" >Add med</a>
+                </div>
+                {% else %}
+                <table class="styled-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>manufacturer</th>
+                            <th>price</th>
+                            <th>Quantity</th>
+                            <th>Exp Date</th>
+                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for d in details %}
+                        <tr>
+                            <td>{{ d.name }}</td>
+                            <td>{{ d.manufacturer }}</td>
+                            <td>{{ d.price }}</td>
+                            <td>{{ d.quantity }}</td>
+                            <td>{{ d.expiry_date }}</td>
+                            
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% endif %}
+        {% endif %}
+        <!-- <div class="appointment-container">                  -->
+            <!-- <div class="home-btn">
+                <a class="homebtnsec" href="{% url 'addmedform' %}" >Add med</a>
+            </div> -->
+        <!-- </div> -->
+    </div>
+</div>
+
+
+{% endblock %}

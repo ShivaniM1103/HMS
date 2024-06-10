@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+
+<div class="main-home">
+    <div class="home" id="Home">
+            <div class="appointment-container">
+             <h1>Login</h1>
+             {% if messages %}
+                <ul>
+                    {% for message in messages %}
+                        <h2{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}<br></h2>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+              <form method="post" action="{% url 'login_view' %}">
+                    {% csrf_token %}
+                    <table class="appform">
+                        {% for field in form %}
+                            <tr>
+                                <td>{{ field.label_tag }}</td>
+                                <td>{{ field }}</td>
+                                <td>{{ field.errors }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                    <div class="home-btn">
+                      <input class="homebtnsec" type="submit" value="Login">
+                    </div>
+                    <div class="home-btn">
+                      <h3>If you dont have an account register here</h3> <a class="homebtnsec" href="{% url 'register' %}">Register</a>
+                    </div>
+                </form>
+            </div>
+                
+        
+    </div>
+</div>
+
+{% endblock %} 

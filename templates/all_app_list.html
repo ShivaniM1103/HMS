@@ -1,0 +1,245 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+
+<div class="main-home">
+    <div class="home" id="Home">
+<!-- <h2>All pending Appointments</h2> -->
+{% if messages %}
+<ul>
+    {% for message in messages %}
+        <h2{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}<br></h2>
+    {% endfor %}
+</ul>
+{% endif %}
+        {% if user.is_doctor %}   
+            <form method="post" action="{% url 'search_appointments' %}">
+                {% csrf_token %}
+                <table class="appform">
+                        <tr>
+                            <td><input type="text" id="searchmed" placeholder="Search by Patient name" name="patientname">
+                                <input class="homebtnsec" type="submit" value="search patient">
+                                <a href="{% url 'appointmentlist' %}" class="homebtnsec">See All</a>
+                            </td>
+                            
+                        </tr>                
+                </table>
+            </form>
+            <br><br>
+       
+        {% if not appointments %}
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th><center>No appointments yet</center></th>
+                </tr>
+            </thead>
+        </table>
+        {% else %}
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>Report ID</th>
+                    <th>Patient Name</th>
+                    <th>Appointment Date</th>
+                    <th>Time Slot</th>
+                    <th>Doctor Name</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for a in appointments %}
+                <tr>
+                    <td>{{ a.id }}</td>
+                    <td>{{ a.patient.get_name }}</td>
+                    <td>{{ a.date }}</td>
+                    <td>{{ a.time_slot }}</td>
+                    <td>{{ a.doctor.get_name }}</td>
+                    <td><a href="{% url 'report' a.id %}">Complete</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+        
+        {% elif user.is_patient %}
+        <h1>Appointments</h1>
+        {% if not appointments %}
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th><center>No appointments yet</center></th>
+                </tr>
+            </thead>
+        </table>
+        <br><br><br>
+        {% else %}
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>Report ID</th>
+                    <th>Appointment Date</th>
+                    <th>Time Slot</th>
+                    <th>Doctor Name</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for a in appointments %}
+                <tr>
+                    <td>{{ a.id }}</td>
+                    <td>{{ a.date }}</td>
+                    <td>{{ a.time_slot }}</td>
+                    <td>{{ a.doctor.get_name }}</td>
+                    {% if a.status %}
+                    <td>Completed</td>
+                    {% else %}
+                    <td>Pending</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <br><br><br>
+        {% endif %}
+        {% if bedbookings %}
+        <h1>Bed Bookings</h1>
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>Booking ID</th>
+                    <th>Department</th>
+                    <th>Bed type</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for b in bedbookings %}
+                <tr>
+                    <td>{{ b.id }}</td>
+                    <td>{{ b.bed.dept.dname }}</td>
+                    {% if b.bedtype == 'Gbed' %}
+                    <td>General</td>
+                    {% else %}
+                    <td>Emergency</td>
+                    {% endif %}
+                    <td>{{ b.startdate }}</td>
+                    <td>{{ b.enddate }}</td>
+                    {% if today > b.enddate %}
+                    <td>Period Over</td>
+                    {% else %}
+                    <td>On going</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+        {% elif user.is_superuser %}
+        
+        <form method="post" action="{% url 'search_appointments' %}">
+            {% csrf_token %}
+            <table class="appform">
+                    <tr>
+                        <td><input type="text" id="searchmed" placeholder="Search by Patient name" name="patientname">
+                            <input class="homebtnsec" type="submit" value="search patient">
+                            <a href="{% url 'appointmentlist' %}" class="homebtnsec">See All</a>
+                        </td>
+                    </tr>             
+            </table><br>
+            <table class="appform"> 
+                <tr>
+                    <td><p>To delete all pending appointments in past:</p><br><a href="{% url 'delpending' %}" class="homebtnsec">Delete Pending</a><br></td>
+                </tr>             
+        </table>
+        </form>
+        <br><br>
+        
+        {% if not appointments %}
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th><center>No appointments yet</center></th>
+                </tr>
+            </thead>
+        </table>
+        <br><br><br>
+        {% else %}
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Patient</th>
+                    <th>Appointment Date</th>
+                    <th>Time Slot</th>
+                    <th>Doctor Name</th>
+                    <th>Status</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for a in appointments %}
+                <tr>
+                    <td>{{ a.id }}</td>
+                    <td>{{ a.patient.get_name }}</td>
+                    <td>{{ a.date }}</td>
+                    <td>{{ a.time_slot }}</td>
+                    <td>{{ a.doctor.get_name }}</td>
+                    {% if a.status %}
+                    <td>Completed</td>
+                    {% else %}
+                    <td>Pending</td>
+                    {% endif %}
+                    <td><a href="{% url 'delapp' a.id %}"><i class="fa fa-trash"></i></a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <br><br><br>
+        {% endif %}
+        {% if bedbookings %}
+        <h1>Bed Bookings</h1>
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>Booking ID</th>
+                    <th>Patient</th>
+                    <th>Department</th>
+                    <th>Bed type</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Status</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for b in bedbookings %}
+                <tr>
+                    <td>{{ b.id }}</td>
+                    <td>{{ b.patient.get_name }}</td>
+                    <td>{{ b.bed.dept.dname }}</td>
+                    {% if b.bedtype == 'Gbed' %}
+                    <td>General</td>
+                    {% else %}
+                    <td>Emergency</td>
+                    {% endif %}
+                    <td>{{ b.startdate }}</td>
+                    <td>{{ b.enddate }}</td>
+                    {% if today > b.enddate %}
+                    <td>Period Over</td>
+                    {% else %}
+                    <td>On going</td>
+                    {% endif %}
+                    <td><a href="{% url 'delbedbook' b.id %}"><i class="fa fa-trash"></i></a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
